@@ -11,7 +11,11 @@
 - Task 7 is completed (2026-10-28): start/stop under races, crashes and timeouts, the `harness_testhooks` hooks and the process and crash suite. `make gate`, `make test-integration`, `make test-e2e` and the hook-enabled variants (`make test-hooks`, `make test-integration-hooks`, `make test-e2e-hooks`) are green. Details and open items in `memory/task_07.md`.
 - Task 8 is completed (2026-10-28): `internal/doctor`, the `doctor`, `config path|validate|show` and `version` verbs, and the daemon runner behind `GET /api/doctor`. `make gate`, `make test-integration`, `make test-e2e` and the three hook variants are green. Details and open items in `memory/task_08.md`.
 - Task 9 is completed (2026-10-29): every suite green together on macOS with `-count=1` (`make gate`, `test-integration`, `test-e2e`, the three hook variants, the architecture test); Linux was then verified the same day, once the user allowed Docker: all six suites green in a `golang:1.27` container (`linux/arm64`, as root), and IT-051 confirmed there (`memory/task_09.md` › Linux verification); the two open checks answered (IT-051: Go unlinks on `Close` by default; UT-029: `fullfsync` reads `1` on darwin; both match the spec); `README.md` written and walked through; roadmap feature 1 marked done. `daemon-core` is complete.
-- The repository has had `git init` (branch `main`) and has no commits. The user commits; never commit without an explicit request.
+- The daemon-core work is committed and pushed, at the user's request on 2026-10-29, to the private GitHub repository `felipmateus/harness`:
+  - `main` holds the setup commit;
+  - the rest is on `feat/daemon-core`, in PR #1.
+
+  The skill run logs (`RUN_LOG-*.md`) stay local and are git-ignored. Never commit or push without an explicit request.
 
 ## Shared Decisions
 
@@ -47,7 +51,7 @@
 - **Doctor is `internal/doctor`:** `doctor.New(Options{Home, Mode, LoadedDigest}).Run(ctx)`, probes in parallel under 2 s each, a deadline that passed means a timeout even if the probe answered. The daemon wires `ModeDaemon` with `d.cfg.Digest`; the CLI runs `ModeLocal` only when the daemon answers `daemon_unavailable`. A report with an error item exits 70 and `config validate` on an invalid file exits 78, both through `silentExit` with the document on stdout.
 - **`ledger.Inspect` reads as `immutable=1` when no `-wal`/`-shm` exists** (a cleanly closed ledger), so the local doctor creates no files; otherwise it is the plain `mode=ro` connection. Accepted by the user on 2026-10-29. See `memory/task_08.md`.
 - **Review round 1 changes:** a boot cancelled once it has appended an event (step 7's unclean event, step 9's `config.loaded`) records `daemon.stopping` and `daemon.stopped` (`daemon.appended`, set by `record`); the spec's Business Rule 12 and boot section say so, and IT-057 plus `TestBootCancelledAfterAnUncleanEventRecordsItsStop` cover it. An empty `daemon.shutdown_grace` is now `invalid_value` (`config.Duration.set`, UT-007).
-- **The six spec amendments from review rounds 1–3 are confirmed by the user (2026-10-29).** Their "needs operator confirmation" notes in `reviews-00*/issue_*.md` are settled; the spec's Status row lists them. Linux was verified on 2026-10-29. Still open with the user: committing.
+- **The six spec amendments from review rounds 1–3 are confirmed by the user (2026-10-29).** Their "needs operator confirmation" notes in `reviews-00*/issue_*.md` are settled; the spec's Status row lists them. Linux was verified and the work committed on 2026-10-29.
 
 ## Shared Learnings
 
