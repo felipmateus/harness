@@ -1,0 +1,6 @@
+/bin/
+*.test
+*.out
+coverage.*
+/.cache/
+.DS_Store
